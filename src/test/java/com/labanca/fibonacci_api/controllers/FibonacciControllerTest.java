@@ -40,7 +40,7 @@ public class FibonacciControllerTest {
     }
 
     @Test
-    void testGetFibonacciPreconditionFailed() {
+    void testGetFibonacciPreconditionNegative() {
         long position = -5;
         String expectedFibonacciValue = "Negative position not allowed";
         HttpStatus expectedHttpStatus = HttpStatus.PRECONDITION_FAILED;
