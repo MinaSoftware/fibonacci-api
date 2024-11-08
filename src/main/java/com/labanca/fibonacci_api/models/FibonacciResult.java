@@ -7,26 +7,22 @@ public class FibonacciResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int position;
-    private int result;
+    private Long position;
+    private Long result;
 
-    public Long getId() {
-        return id;
-    }
-
-    public int getPosition() {
+    public Long getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(Long position) {
         this.position = position;
     }
 
-    public int getResult() {
+    public long getResult() {
         return result;
     }
 
-    public void setResult(int result) {
+    public void setResult(long result) {
         this.result = result;
     }
 }

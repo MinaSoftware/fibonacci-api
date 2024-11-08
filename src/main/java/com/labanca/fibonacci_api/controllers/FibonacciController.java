@@ -13,7 +13,7 @@ public class FibonacciController {
     private FibonacciService fibonacciService;
 
     @GetMapping("/{position}")
-    public ResponseEntity<String> getFibonacci(@PathVariable int position) {
+    public ResponseEntity<String> getFibonacci(@PathVariable long position) {
         return fibonacciService.getFibonacci(position);
     }
 }

@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface DataResultRepository extends JpaRepository<FibonacciResult, Long> {
-    Optional<FibonacciResult> findByPosition(int position);
+    Optional<FibonacciResult> findByPosition(long position);
 }

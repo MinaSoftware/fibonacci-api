@@ -15,29 +15,29 @@ public class FibonacciService {
     @Autowired
     private DataResultRepository dataResultRepository;
 
-    public ResponseEntity<String> getFibonacci(int position) {
+    public ResponseEntity<String> getFibonacci(Long position) {
 
         if( position < 0) {
             return new ResponseEntity<>("Negative position not allowed", HttpStatus.PRECONDITION_FAILED);
         }
-        Integer resultInCache = findInCache(position);
+        Long resultInCache = findInCache(position);
 
-        Integer result =  resultInCache != null ? resultInCache : calculateFibonacci(position);
+        Long result =  resultInCache != null ? resultInCache : calculateFibonacci(position);
 
         return new ResponseEntity<>(result.toString(), HttpStatus.OK);
     }
 
-    private Integer findInCache(int position) {
+    private Long findInCache(Long position) {
         Optional<FibonacciResult> cachedResult = dataResultRepository.findByPosition(position);
         return cachedResult.isPresent() ? cachedResult.get().getResult() : null;
     }
 
-    private int calculateFibonacci(int position) {
-        int previous = 0;
-        int current = position <= 1 ? position : 1;
+    private long calculateFibonacci(Long position) {
+        long previous = 0;
+        long current = position <= 1 ? position : 1;
 
-        for (int i = 2; i <= position; i++) {
-            int next = previous + current;
+        for (long i = 2; i <= position; i++) {
+            long next = previous + current;
             previous = current;
             current = next;
         }
@@ -45,7 +45,7 @@ public class FibonacciService {
         return current;
     }
 
-    private void saveInDataBase(int position, int fibonacciNumber) {
+    private void saveInDataBase(long position, long fibonacciNumber) {
         try {
             FibonacciResult result = new FibonacciResult();
             result.setPosition(position);
@@ -54,6 +54,5 @@ public class FibonacciService {
         } catch (Exception e){
             throw new RuntimeException("Failed to save Fibonacci result in the database", e);
         }
-
     }
 }
