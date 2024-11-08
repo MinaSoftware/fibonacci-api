@@ -17,7 +17,8 @@ public class FibonacciResponse {
         this.httpStatusCode = HttpStatus.OK;
     }
 
-    public FibonacciResponse(String error, HttpStatus httpStatusCode) {
+    public FibonacciResponse(Long position, String error, HttpStatus httpStatusCode) {
+        this.position = position;
         this.error = error;
         this.httpStatusCode = httpStatusCode;
     }
