@@ -1,12 +1,14 @@
 package com.labanca.fibonacci_api.services;
 
+import com.labanca.fibonacci_api.exceptions.DataSaveException;
+import com.labanca.fibonacci_api.exceptions.StatisticsSaveException;
+import com.labanca.fibonacci_api.models.FibonacciResponse;
 import com.labanca.fibonacci_api.models.FibonacciResult;
 import com.labanca.fibonacci_api.models.FibonacciStatistics;
 import com.labanca.fibonacci_api.repositories.DataResultRepository;
 import com.labanca.fibonacci_api.repositories.StatisticsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,19 +16,22 @@ import java.util.Optional;
 @Service
 public class FibonacciService {
 
+    private static final long MIN_POSITION = 0;
+    private static final long MAX_POSITION = 91;
+
     @Autowired
     private DataResultRepository dataResultRepository;
 
     @Autowired
     private StatisticsRepository statisticsRepository;
 
-    public ResponseEntity<String> getFibonacci(long position) {
+    public FibonacciResponse getFibonacci(long position) throws DataSaveException {
 
         // Precondition: position debe ser un entero positivo menor a 92
-        if (position < 0) {
-            return new ResponseEntity<>("Negative position not allowed", HttpStatus.PRECONDITION_FAILED);
-        } else if (position > 91){
-            return new ResponseEntity<>("Positions greater than 91 are not allowed", HttpStatus.PRECONDITION_FAILED);
+        if (position < MIN_POSITION) {
+            return new FibonacciResponse("Negative position not allowed", HttpStatus.PRECONDITION_FAILED);
+        } else if (position > MAX_POSITION){
+                return new FibonacciResponse("Positions greater than 91 are not allowed", HttpStatus.PRECONDITION_FAILED);
         }
 
         Long resultInCache = findInCache(position);
@@ -35,7 +40,7 @@ public class FibonacciService {
 
         updateStatistics(position);
 
-        return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+        return new FibonacciResponse(position, result);
     }
 
     private Long findInCache(long position) {
@@ -43,7 +48,7 @@ public class FibonacciService {
         return cachedResult.isPresent() ? cachedResult.get().getResult() : null;
     }
 
-    private long calculateFibonacci(long position) {
+    private long calculateFibonacci(long position) throws DataSaveException {
         long previous = 0;
         long current = position <= 1 ? position : 1;
 
@@ -56,14 +61,14 @@ public class FibonacciService {
         return current;
     }
 
-    private void saveInDataBase(long position, long fibonacciNumber) {
+    private void saveInDataBase(long position, long fibonacciNumber) throws DataSaveException {
         try {
             FibonacciResult result = new FibonacciResult();
             result.setPosition(position);
             result.setResult(fibonacciNumber);
             dataResultRepository.save(result);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to save Fibonacci result in the database", e);
+            throw new DataSaveException("Failed to save Fibonacci result in the database", e.getCause());
         }
     }
 
@@ -76,7 +81,7 @@ public class FibonacciService {
             stats.setCount(count + 1);
             statisticsRepository.save(stats);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to save Fibonacci Statistics in the database", e);
+            throw new StatisticsSaveException("Failed to save Fibonacci Statistics in the database", e.getCause());
         }
     }
 }
