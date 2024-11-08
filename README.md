@@ -48,9 +48,14 @@ curl --location 'http://localhost:8080/api/fibonacci/10'
 ```
 
 **Response**
-
-**Status Code:** `200 OK`  
-**Body:** `55`  
+```json
+{
+  "position": 10,
+  "result": 55,
+  "error": null,
+  "httpStatusCode": "OK"
+}
+```
 
 ## **Manejo de Errores**
 La API devuelve un mensaje de error si:
@@ -59,14 +64,20 @@ La API devuelve un mensaje de error si:
 
 ```json
 {
-  Negative position not allowed
+  "position": -10,
+  "result": null,
+  "error": "Negative position not allowed",
+  "httpStatusCode": "PRECONDITION_FAILED"
 }
 ```
 - La position es mayor o igual a 92
 
 ```json
 {
-  Positions greater than 91 are not allowed
+  "position": 92,
+  "result": null,
+  "error": "Positions greater than 91 are not allowed",
+  "httpStatusCode": "PRECONDITION_FAILED"
 }
 ```
 
