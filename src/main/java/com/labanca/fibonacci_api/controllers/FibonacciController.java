@@ -1,5 +1,7 @@
 package com.labanca.fibonacci_api.controllers;
 
+import com.labanca.fibonacci_api.exceptions.DataSaveException;
+import com.labanca.fibonacci_api.models.FibonacciResponse;
 import com.labanca.fibonacci_api.services.FibonacciService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +15,7 @@ public class FibonacciController {
     private FibonacciService fibonacciService;
 
     @GetMapping("/{position}")
-    public ResponseEntity<String> getFibonacci(@PathVariable long position) {
+    public FibonacciResponse getFibonacci(@PathVariable long position) throws DataSaveException {
         return fibonacciService.getFibonacci(position);
     }
 }

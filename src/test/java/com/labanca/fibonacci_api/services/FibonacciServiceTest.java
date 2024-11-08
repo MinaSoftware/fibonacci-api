@@ -1,5 +1,7 @@
 package com.labanca.fibonacci_api.services;
 
+import com.labanca.fibonacci_api.exceptions.DataSaveException;
+import com.labanca.fibonacci_api.models.FibonacciResponse;
 import com.labanca.fibonacci_api.models.FibonacciResult;
 import com.labanca.fibonacci_api.models.FibonacciStatistics;
 import com.labanca.fibonacci_api.repositories.DataResultRepository;
@@ -30,7 +32,7 @@ public class FibonacciServiceTest {
     StatisticsRepository statisticsRepositoryMock;
 
     @Test
-    void testGetFibonacciFindInCache() {
+    void testGetFibonacciFindInCache() throws DataSaveException {
         long position = 5;
         long expectedFibonacciResult = 5;
 
@@ -42,70 +44,73 @@ public class FibonacciServiceTest {
         fibonacciStatistics.setCount(2);
         when(dataResultRepositoryMock.findByPosition(position)).thenReturn(Optional.of(cachedResult));
 
-        ResponseEntity<String> response = fibonacciService.getFibonacci(position);
+        FibonacciResponse response = fibonacciService.getFibonacci(position);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(String.valueOf(expectedFibonacciResult), response.getBody());
+        assertEquals(HttpStatus.OK, response.getHttpStatusCode());
+        assertEquals(position, response.getPosition());
+        assertEquals(expectedFibonacciResult, response.getResult());
 
         verify(statisticsRepositoryMock, times(1)).save(any(FibonacciStatistics.class));
         verify(dataResultRepositoryMock, times(0)).save(any(FibonacciResult.class));
     }
 
     @Test
-    void testGetFibonacciNotFindInCache() {
+    void testGetFibonacciNotFindInCache() throws DataSaveException {
         long position = 5;
-        String expectedFibonacciResult = "5";
+        long expectedFibonacciResult = 5;
 
         when(dataResultRepositoryMock.findByPosition(position)).thenReturn(Optional.empty());
 
-        ResponseEntity<String> response = fibonacciService.getFibonacci(position);
+        FibonacciResponse response = fibonacciService.getFibonacci(position);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedFibonacciResult, response.getBody());
+        assertEquals(HttpStatus.OK, response.getHttpStatusCode());
+        assertEquals(position, response.getPosition());
+        assertEquals(expectedFibonacciResult, response.getResult());
+        assertEquals(expectedFibonacciResult, response.getResult());
 
         verify(dataResultRepositoryMock, times(1)).save(any(FibonacciResult.class));
     }
 
     @Test
-    void testGetFibonacciPosition1() {
+    void testGetFibonacciPosition1() throws DataSaveException {
         long position = 1;
         long expectedFibonacciResult = 1;
 
         when(dataResultRepositoryMock.findByPosition(position)).thenReturn(Optional.empty());
 
-        ResponseEntity<String> response = fibonacciService.getFibonacci(position);
+        FibonacciResponse response = fibonacciService.getFibonacci(position);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(String.valueOf(expectedFibonacciResult), response.getBody());
+        assertEquals(HttpStatus.OK, response.getHttpStatusCode());
+        assertEquals(position, response.getPosition());
+        assertEquals(expectedFibonacciResult, response.getResult());
 
         verify(dataResultRepositoryMock, times(1)).save(any(FibonacciResult.class));
     }
 
 
     @Test
-    void testGetFibonacciWithNegativePosition() {
+    void testGetFibonacciWithNegativePosition() throws DataSaveException {
         long position = -5;
 
-        ResponseEntity<String> response = fibonacciService.getFibonacci(position);
+        FibonacciResponse response = fibonacciService.getFibonacci(position);
 
-        assertEquals(HttpStatus.PRECONDITION_FAILED, response.getStatusCode());
-        assertEquals("Negative position not allowed", response.getBody());
+        assertEquals(HttpStatus.PRECONDITION_FAILED, response.getHttpStatusCode());
+        assertEquals("Negative position not allowed", response.getError());
 
         verify(dataResultRepositoryMock, times(0)).findByPosition(anyLong());
         verify(dataResultRepositoryMock, times(0)).save(any(FibonacciResult.class));
     }
 
     @Test
-    void testGetFibonacciPreconditionGreaterThan91() {
+    void testGetFibonacciPreconditionGreaterThan91() throws DataSaveException {
         long position = 92;
         String expectedFibonacciValue = "Positions greater than 91 are not allowed";
         HttpStatus expectedHttpStatus = HttpStatus.PRECONDITION_FAILED;
 
-        ResponseEntity<String> response = fibonacciService.getFibonacci(position);
+        FibonacciResponse response = fibonacciService.getFibonacci(position);
 
-        assertEquals(HttpStatus.PRECONDITION_FAILED, response.getStatusCode());
-        assertEquals(expectedFibonacciValue, response.getBody());
-        assertEquals(expectedHttpStatus, response.getStatusCode());
+        assertEquals(HttpStatus.PRECONDITION_FAILED, response.getHttpStatusCode());
+        assertEquals(expectedFibonacciValue, response.getError());
 
         verify(dataResultRepositoryMock, times(0)).findByPosition(position);
     }
