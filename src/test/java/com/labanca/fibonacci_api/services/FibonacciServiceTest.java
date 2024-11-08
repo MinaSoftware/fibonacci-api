@@ -94,6 +94,7 @@ public class FibonacciServiceTest {
 
         FibonacciResponse response = fibonacciService.getFibonacci(position);
 
+        assertEquals(position, response.getPosition());
         assertEquals(HttpStatus.PRECONDITION_FAILED, response.getHttpStatusCode());
         assertEquals("Negative position not allowed", response.getError());
 
@@ -109,6 +110,7 @@ public class FibonacciServiceTest {
 
         FibonacciResponse response = fibonacciService.getFibonacci(position);
 
+        assertEquals(position, response.getPosition());
         assertEquals(HttpStatus.PRECONDITION_FAILED, response.getHttpStatusCode());
         assertEquals(expectedFibonacciValue, response.getError());
 

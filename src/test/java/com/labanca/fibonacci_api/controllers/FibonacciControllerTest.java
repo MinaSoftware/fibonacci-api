@@ -48,12 +48,13 @@ public class FibonacciControllerTest {
         long position = -5;
         String expectedFibonacciValue = "Negative position not allowed";
         HttpStatus expectedHttpStatus = HttpStatus.PRECONDITION_FAILED;
-        FibonacciResponse responseExpected = new FibonacciResponse(expectedFibonacciValue, expectedHttpStatus);
+        FibonacciResponse responseExpected = new FibonacciResponse(position, expectedFibonacciValue, expectedHttpStatus);
         doReturn(responseExpected)
                 .when(fibonacciServiceMock).getFibonacci(position);
 
         FibonacciResponse response = fibonacciController.getFibonacci(position);
 
+        assertEquals(position, response.getPosition());
         assertEquals(responseExpected.getHttpStatusCode(), response.getHttpStatusCode());
         assertEquals(responseExpected.getError(), response.getError());
 

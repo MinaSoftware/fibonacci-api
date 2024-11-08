@@ -29,9 +29,9 @@ public class FibonacciService {
 
         // Precondition: position debe ser un entero positivo menor a 92
         if (position < MIN_POSITION) {
-            return new FibonacciResponse("Negative position not allowed", HttpStatus.PRECONDITION_FAILED);
+            return new FibonacciResponse(position, "Negative position not allowed", HttpStatus.PRECONDITION_FAILED);
         } else if (position > MAX_POSITION){
-                return new FibonacciResponse("Positions greater than 91 are not allowed", HttpStatus.PRECONDITION_FAILED);
+                return new FibonacciResponse(position, "Positions greater than 91 are not allowed", HttpStatus.PRECONDITION_FAILED);
         }
 
         Long resultInCache = findInCache(position);
